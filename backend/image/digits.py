@@ -35,15 +35,15 @@ def extract_digits(board):
             roi = roi[int(0.1*ROIsizeY):int(0.9*ROIsizeY),int(0.1*ROIsizeX):int(0.9*ROIsizeX)]
 
             # grey_roi = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
-            # edited = cv.medianBlur(roi, 3)
             kernel = np.ones((3,3),np.uint8)
             edited = cv2.morphologyEx(roi, cv2.MORPH_OPEN, kernel)
-            # edited = cv.threshold(edited, 127, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)[1]
-            # edited = cv.adaptiveThreshold(edited,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY,11,2)
-            #edited = cv.blur(grey_roi, (3,3))
+            # edited = cv2.medianBlur(edited, 3)
+            edited = cv2.threshold(edited, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+            # edited = cv2.adaptiveThreshold(edited,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
+            # edited = cv.blur(grey_roi, (3,3))
 
             # cv.imshow('rois'+str(i)+str(j), edited)
-            # cv2.imwrite(basepath + '/patches/patch_'+str(i)+str(j)+".jpg", edited)
+            cv2.imwrite('./patches/patch_'+str(i)+str(j)+".jpg", edited)
             # cv.waitKey()
 
             text = pytesseract.image_to_string(edited, config='-c tessedit_char_whitelist=123456789 --psm 10 --oem 3')

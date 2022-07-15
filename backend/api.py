@@ -38,8 +38,6 @@ class Board(Resource):
         response = send_file(
             res,
             mimetype="image/png"
-            # as_attachment=True,
-            # download_name="res"
         )
         
         return response
@@ -51,9 +49,10 @@ class Digits(Resource):
         args = parse.parse_args()
         print(args)
 
+        # cv2.imwrite("blah.png", convert_to_image(args['file']))
+
         res = extract_digits(convert_to_image(args['file']))
 
-        sudoku = {"sudoku": res}
         encodedNumpyData = json.dumps(res, cls=NumpyArrayEncoder)  # use dump() to write array into file
         print("Printing JSON serialized NumPy array")
 
