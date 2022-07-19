@@ -1,58 +1,59 @@
+import copy
 import numpy as np
 import cv2
-
 import pytesseract
 
-pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
-
 def extract_digits(board):
-    sudoku = np.empty([9,9])
+    # Extract size of the board
+    sizeX, sizeY = board.shape[0], board.shape[1]
+    length = (sizeX+sizeY)/2
 
-    # Has 9 rows and 9 columns
-    nRows = mCols = 9
+    # Approximate the kernel to use
+    kernel_size = round(length/350)
+    kernel = np.ones((kernel_size,kernel_size),np.uint8)
 
-    sizeX = board.shape[1]
-    sizeY = board.shape[0]
+    # Apply image corrections
+    blurred = cv2.GaussianBlur(board,(5,5),0)
+    opened = cv2.morphologyEx(blurred, cv2.MORPH_OPEN, kernel)
+    closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, kernel)
+    dilated = cv2.dilate(closed,kernel)
 
-    img = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
-    blur = cv2.GaussianBlur(img,(3,3),0)
-    img = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
+    # show_wait_destroy("smooth - dilated", dilated)
 
+    # Detect large lines to remove grid
+    lines = cv2.ximgproc.createFastLineDetector(length_threshold=int(length/(18)), do_merge=True).detect(dilated)
+    if lines is not None:
+        for line in lines:
+            # Draw white line other identified lines
+            (x_start, y_start, x_end, y_end) = line[0]
+            cv2.line(dilated, (int(x_start), int(y_start)), (int(x_end), int(y_end)), (255, 255, 255), thickness=int(board.shape[0]/20))
 
-    # img = cv.adaptiveThreshold(img,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY,11,2)
+    # Init empty sudoku
+    sudoku = np.zeros([9,9])
 
+    # Apply threshold for 
+    thr = cv2.threshold(dilated,100,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]    
 
-    for i in range(0,nRows):
-        for j in range(0, mCols):
-            x_a = int(i*sizeY/nRows)
-            x_b = int(i*sizeY/nRows + sizeY/nRows) 
-            y_a = int(j*sizeX/mCols)
-            y_b = int(j*sizeX/mCols + sizeX/mCols)
-            roi = img[x_a:x_b,y_a:y_b]
-            ROIsizeX = roi.shape[1]
-            ROIsizeY = roi.shape[0]
+    boxes = pytesseract.image_to_boxes(thr,config='-c tessedit_char_whitelist=123456789 --psm 6')
+    for b in boxes.splitlines():
+        # Extract box features
+        b = b.split(' ')
+        x, y, w, h = int(b[1]), int(b[2]), int(b[3]), int(b[4])
 
-            roi = roi[int(0.1*ROIsizeY):int(0.9*ROIsizeY),int(0.1*ROIsizeX):int(0.9*ROIsizeX)]
+        # Assign box to to a grid on the 9x9 board
+        i = int(((x+w)/2)/(sizeX/9))
+        j = int((sizeY-((y+h)/2))/(sizeY/9))
 
-            # grey_roi = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
-            kernel = np.ones((3,3),np.uint8)
-            edited = cv2.morphologyEx(roi, cv2.MORPH_OPEN, kernel)
-            # edited = cv2.medianBlur(edited, 3)
-            edited = cv2.threshold(edited, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-            # edited = cv2.adaptiveThreshold(edited,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
-            # edited = cv.blur(grey_roi, (3,3))
-
-            # cv.imshow('rois'+str(i)+str(j), edited)
-            cv2.imwrite('./patches/patch_'+str(i)+str(j)+".jpg", edited)
-            # cv.waitKey()
-
-            text = pytesseract.image_to_string(edited, config='-c tessedit_char_whitelist=123456789 --psm 10 --oem 3')
-            # print(text)
-            text = text.replace('\n', '').replace('\f', '')
-            if text.isdigit():
-                sudoku[i][j] = int(text)
-            else:
-                sudoku[i][j] = 0
+        # Extract image of the box
+        # Skip if it is white only
+        box = thr[int(j*sizeX/9):int(int((j+1)*sizeX/9)),int(i*sizeY/9):int(int((i+1)*sizeY/9))]
+        if (i < 9 and j < 9 and np.average(box) < 254):
+            sudoku[j][i] = b[0]
+        else:
+            print("Skipping "+str(j)+str(i))
         
+        # For debugging
+        # cv2.rectangle(res, (x, sizeY - y), (w, sizeY - h), (50, 50, 255), 1)
+        # cv2.putText(res, b[0], (x, sizeY - y + 30), cv2.FONT_HERSHEY_SIMPLEX, 4, (50, 205, 50), 5)
+
     return sudoku
-    # print(sudoku)

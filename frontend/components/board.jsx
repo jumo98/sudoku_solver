@@ -1,7 +1,3 @@
-import { useState } from "react";
-
-
-
 export const Board = (props) => {
     return (
         <div>
@@ -21,7 +17,7 @@ export const Board = (props) => {
                                                 if (value == 0) {
                                                     value = ""
                                                 }
-                                                nums.push(<td key={key} className="border-black	 h-[50px] w-[50px] border-[2px] first:border-l-8 third-child:border-r-8">{value}</td>);
+                                                nums.push(<td key={key} className="border-black	 h-[40px] w-[40px] border-[2px] first:border-l-8 third-child:border-r-8">{value}</td>);
                                             }
                                             return nums;
                                         })()}

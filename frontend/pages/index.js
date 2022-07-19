@@ -6,6 +6,8 @@ import { Button } from '../components/Button';
 import { UploadImage } from '../components/UploadImage'
 import { Navbar } from '../components/Navbar'
 import { Card } from '../components/Card';
+import { Algorithms } from '../components/Algorithms';
+import { Solution } from '../components/Solution';
 
 function ProcessBoardImage(file) {
   const formData = new FormData();
@@ -30,6 +32,8 @@ function ProcessBoardImage(file) {
 export default function Home() {
   const [boardImage, setBoardImage] = useState(null)
   const [board, setBoard] = useState([])
+  const [solution, setSolution] = useState([])
+  const [durations, setDurations] = useState({})
 
   function SetBoardImage(image) {
     setBoardImage(image)
@@ -40,6 +44,14 @@ export default function Home() {
       })
   }
 
+  function resetSolution() {
+    setSolution([])
+  }
+
+  function resetChart() {
+    setDurations({})
+  }
+
   return (
     <div>
       <Head>
@@ -47,55 +59,27 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className='z-40 fixed'>
+      <div className='z-40'>
         <Navbar />
       </div>
 
-      <div className='h-screen grid grid-cols-2 gap-4'>
+      <div className='p-5 m-auto grid grid-cols-3 gap-4'>
         <div className='m-auto text-center'>
+          <h1 className='align-top'>Image Upload</h1>
           <UploadImage setBoardImage={SetBoardImage} />
         </div>
-        {/* <div className='m-auto text-center'>
-          {board.length > 0 ? <Board board={board} /> : <p>Waiting...</p>}
-        </div> */}
         <div className='m-auto text-center'>
           {
             board.length > 0 ?
-              <div>
-                <div className='grid grid-cols-2 gap-4'>
-                  <div>
-                    <Card title="Backtracking" description="That took 1.23s" />
-                  </div>
-                  <div>
-                    <Card title="Jan" description="test" />
-                  </div>
-                  <div>
-                    <Card title="AI at once" description="test" />
-                  </div>
-                  <div>
-                    <Card title="AI one after another" description="test" />
-                  </div>
-                </div>
-                <div className='p-5'>
-                  <Board board={board}/>
-                </div>
-              </div>
+              <Algorithms setSolution={setSolution} setDurations={setDurations} board={board} solution/>
               :
-              <p>Waiting...</p>
+              <p>Waiting for submission</p>
           }
-
-
-
+        </div>
+        <div className='m-auto text-center'>
+          <Solution solution={solution} durations={durations} resetChart={resetChart} resetSolution={resetSolution}/>
         </div>
       </div>
-
-      {/* <div className='h-screen'>
-        <div className='m-auto text-center'>
-          {step == "upload" ? <UploadImage /> : ''}
-          {step  == "board" ? <Board /> : ''}
-          <Button onStepChange={handleClick}/>
-        </div>
-      </div> */}
     </div>
   )
 }

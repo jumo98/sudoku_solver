@@ -1,3 +1,9 @@
+### 
+model/sudoku.csv
+model/sudoku_full.csv
+.ipynb_checkpoints
+
+###
 .DS_Store
 .env
 .flaskenv
