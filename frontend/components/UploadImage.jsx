@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 import { FileUploader } from "react-drag-drop-files";
 import { Button } from "./Button";
 import { Slider } from "./Slider";
@@ -64,7 +65,7 @@ export const UploadImage = (props) => {
             {file ?
                 <div>
                     <Slider onChange={handleSliderChange} disabled={sliderDisabled}/>
-                    <img className="w-[400px]" src={boardFileURL} />
+                    <Image alt="board" className="w-[400px]" src={boardFileURL} />
                     <FileUploader
                         multiple={false}
                         handleChange={handleOriginalImageChange}

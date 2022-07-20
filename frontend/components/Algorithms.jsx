@@ -72,36 +72,42 @@ export const Algorithms = (props) => {
 
     return (
         <div>
-            <div className='grid grid-cols-2 gap-4'>
+            {props.board.length > 0 ?
                 <div>
-                    <Card title="Backtracking" onClick={handleBacktracking} />
-                </div>
-                <div>
-                    <Card title="Norvig" onClick={handleNorvig} />
-                </div>
-                <div>
-                    <Card title="AI (Once)" onClick={handleMachineLearningOnce} />
-                </div>
-                <div>
-                    <Card title="AI (Inference)" onClick={handleMachineLearningInference} />
-                </div>
-            </div>
-            <div className='p-5'>
-                {
-                    solution.length > 0 ?
+                    <div className='grid grid-cols-2 gap-4'>
                         <div>
-                            {solved ?
-                                <p>Valid solution</p>
-                                :
-                                <p>No valid solution found</p>
-                            }
-                            <Board board={solution} />
-                            <Button text="Reset Board" onClick={resetSolution} />
+                            <Card title="Backtracking" onClick={handleBacktracking} />
                         </div>
-                        :
-                        <Board board={props.board} />
-                }
-            </div>
+                        <div>
+                            <Card title="Norvig" onClick={handleNorvig} />
+                        </div>
+                        <div>
+                            <Card title="AI (Once)" onClick={handleMachineLearningOnce} />
+                        </div>
+                        <div>
+                            <Card title="AI (Inference)" onClick={handleMachineLearningInference} />
+                        </div>
+                    </div>
+                    <div className='p-5'>
+                        {
+                            solution.length > 0 ?
+                                <div>
+                                    {solved ?
+                                        <p>Valid solution</p>
+                                        :
+                                        <p>No valid solution found</p>
+                                    }
+                                    <Board board={solution} />
+                                    <Button text="Reset Board" onClick={resetSolution} />
+                                </div>
+                                :
+                                <Board board={props.board} />
+                        }
+                    </div>
+                </div>
+                :
+                <p>Waiting for submission...</p>
+            }
         </div>
     )
 }
