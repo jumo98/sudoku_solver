@@ -10,7 +10,6 @@ import {
 } from 'chart.js';
 
 import { Bar } from 'react-chartjs-2';
-import faker from 'faker';
 
 ChartJS.register(
   CategoryScale,
@@ -35,12 +34,11 @@ export const options = {
     },
     title: {
       display: true,
-      text: 'Algorithm Duration in ms',
+      text: 'Algorithm duration in ms',
     },
   }
 };
 
-// const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
 export const AlgorithmChart = (props) => {
     const labels = []
@@ -64,7 +62,6 @@ export const AlgorithmChart = (props) => {
         datasets: datasets,
       }
 
-    console.log(props.data)
     return (
         <div>
             <Bar options={options} data={chart} />
