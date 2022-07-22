@@ -21,7 +21,7 @@ CORS(app)
 api = Api(app)
 
 # Load ML model
-model = keras.models.load_model('../sudoku.model')
+model = keras.models.load_model('../sudoku.h5')
 
 class NumpyArrayEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -126,4 +126,4 @@ api.add_resource(AlgorithmMachineLearningInference, '/algorithms/ml_inference')
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=9877)
+    app.run(debug=True, host='0.0.0.0', port=5000)

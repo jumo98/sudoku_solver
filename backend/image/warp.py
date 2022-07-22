@@ -49,17 +49,15 @@ def get_corners(polygon):
 
     return top_left, top_right, bottom_left, bottom_right
 
-def warp_to_board(src, max_contour):
-     # TEST
+def warp_to_board(src_gray, src, max_contour):
     peri = cv2.arcLength(max_contour, True)
     corners = cv2.approxPolyDP(max_contour, 0.04 * peri, True)
 
     # draw quadrilateral on input image from detected corners
-    result = src.copy()
-    cv2.polylines(result, [corners], True, (0,0,255), 10, cv2.LINE_AA)
+    result = src_gray.copy()
+    poly = cv2.polylines(src, [corners], True, (0,0,255), 10, cv2.LINE_AA)
+    cv2.imwrite("polylines.png", poly)
     result = cv2.resize(result, (800 , 800)) 
-    cv2.imwrite("QUAD.png", result)
-    # cv2.waitKey(0)
 
     top_left, top_right, bottom_left, bottom_right  = get_corners(corners)
     s = np.array([top_left, top_right, bottom_right, bottom_left], dtype='float32')
@@ -78,10 +76,9 @@ def warp_to_board(src, max_contour):
 	# Gets the transformation matrix for skewing the image to fit a square by comparing the 4 before and after points
     m = cv2.getPerspectiveTransform(s, dst)
 
-    return  cv2.warpPerspective(src, m, (int(side), int(side)))
+    return  cv2.warpPerspective(src_gray, m, (int(side), int(side)))
 
 def board_threshold(img, threshold):
-
     cv2.imwrite("src.png", img)
     # Convert source image to gray scale
     src_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -89,6 +86,8 @@ def board_threshold(img, threshold):
     src_gray = cv2.blur(src_gray, (2,2))
     # Apply threshold
     src_gray = cv2.threshold(src_gray,threshold,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
+
+    cv2.imwrite("gray.png", src_gray)
 
     # Detect edges using Canny
     canny_output = cv2.Canny(src_gray, threshold, threshold * 2)
@@ -105,9 +104,11 @@ def board_threshold(img, threshold):
     if (cv2.arcLength(max_con, closed=True) < 2*img.shape[0]):
         return io_buf
 
-    res = warp_to_board(src_gray, max_con)
+    res = warp_to_board(src_gray, img, max_con)
 
     _, buffer = cv2.imencode(".png", res)
     io_buf = io.BytesIO(buffer)
+
+    cv2.imwrite("warped.png", res)
     
     return io_buf

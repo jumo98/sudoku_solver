@@ -1,13 +1,17 @@
 import numpy as np
 import copy
 
+# Normalize
 def norm(a):
     return (a/9)-.5
 
+# Denormalize
 def denorm(a):
     return (a+.5)*9
 
+# Solve sudoku by applying the predictions all at once
 def solve_sudoku_ml_once(model, board):
+    # Normalize the game
     game = norm(board)
     out = model.predict(game.reshape((1,9,9,1)))
     out = out.squeeze()

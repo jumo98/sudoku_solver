@@ -3,6 +3,8 @@ import numpy as np
 import cv2
 import pytesseract
 
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
 def extract_digits(board):
     # Extract size of the board
     sizeX, sizeY = board.shape[0], board.shape[1]
@@ -18,7 +20,7 @@ def extract_digits(board):
     closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, kernel)
     dilated = cv2.dilate(closed,kernel)
 
-    # show_wait_destroy("smooth - dilated", dilated)
+    cv2.imwrite("corrections.png", dilated)
 
     # Detect large lines to remove grid
     lines = cv2.ximgproc.createFastLineDetector(length_threshold=int(length/(18)), do_merge=True).detect(dilated)
@@ -28,11 +30,17 @@ def extract_digits(board):
             (x_start, y_start, x_end, y_end) = line[0]
             cv2.line(dilated, (int(x_start), int(y_start)), (int(x_end), int(y_end)), (255, 255, 255), thickness=int(board.shape[0]/20))
 
+
+
     # Init empty sudoku
     sudoku = np.zeros([9,9])
 
     # Apply threshold for 
-    thr = cv2.threshold(dilated,100,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]    
+    thr = cv2.threshold(dilated,100,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]   
+
+    cv2.imwrite("no_grid.png", thr) 
+
+    rgb = cv2.cvtColor(thr,cv2.COLOR_GRAY2RGB)
 
     boxes = pytesseract.image_to_boxes(thr,config='-c tessedit_char_whitelist=123456789 --psm 6')
     for b in boxes.splitlines():
@@ -53,7 +61,9 @@ def extract_digits(board):
             print("Skipping "+str(j)+str(i))
         
         # For debugging
-        # cv2.rectangle(res, (x, sizeY - y), (w, sizeY - h), (50, 50, 255), 1)
-        # cv2.putText(res, b[0], (x, sizeY - y + 30), cv2.FONT_HERSHEY_SIMPLEX, 4, (50, 205, 50), 5)
+        cv2.rectangle(rgb, (x, sizeY - y), (w, sizeY - h), (50, 50, 255), 1)
+        cv2.putText(rgb, b[0], (x + 30, sizeY - y + 50), cv2.FONT_HERSHEY_SIMPLEX, 4, (0, 0, 255), 5)
+
+    cv2.imwrite("boxes.png", rgb)
 
     return sudoku

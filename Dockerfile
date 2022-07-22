@@ -45,28 +45,25 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-USER nextjs
-
-EXPOSE 3000
-
-ENV PORT 3000
-
-# CMD ["node", "server.js"]
-
-
 # Build step #2: build the API with the client as static files
-#FROM python:3.8
-FROM armswdev/tensorflow-arm-neoverse
+FROM python:3.9
 WORKDIR /app
 COPY --from=runner /app/ .
 
 RUN mkdir ./api
 COPY requirements.txt backend/api.py ./api/
-COPY sudoku.model .
+COPY backend/image/ ./api/image/
+COPY backend/algorithms/ ./api/algorithms/
+COPY sudoku.h5 .
 RUN pip install -r ./api/requirements.txt
-#RUN pip install https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.9.0-py3-none-any.whl
 ENV FLASK_ENV production
+
+RUN apt-get update
+RUN apt-get install ffmpeg libsm6 libxext6 nodejs tesseract-ocr -y
+
+COPY ./entrypoint.sh .
+RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 3000
 WORKDIR /app/api
-CMD ["python", "api.py", "run", "-h 0.0.0.0"]
+CMD ["/app/entrypoint.sh"]
