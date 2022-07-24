@@ -15,3 +15,6 @@ docker run -p 3000:3000 motzi/sudoku-solver
 You should then be able to view the WebUI on: http://localhost:3000
 
 > All tests were performed under Windows 10 (amd64)
+
+Images for testing can be found in the directory images with the names `s0.png`, `s1.png`, `s2.png` and `s3.png`.
+The last one is an example where the image processing is not working correctly probably due to inconsistent lighting of the image.
