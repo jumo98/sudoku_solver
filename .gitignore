@@ -1,6 +1,6 @@
 ### 
-model/sudoku.csv
-model/sudoku_full.csv
+notebooks/sudoku.csv
+notebooks/sudoku_full.csv
 .ipynb_checkpoints
 
 ###
