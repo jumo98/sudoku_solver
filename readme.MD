@@ -26,14 +26,14 @@ In this chapter will be explained how to start each of the services.
 ### Jupyter notebooks
 
 To run the Jupyter notebooks, start by creating a virtual environment, activating it and installing the dependencies from the requirements file.
-```console
+```Shell
 python3 -m venv myvenv
-.\venv\Scripts\Activate.ps1   // For windows
+.\myvenv\Scripts\Activate.ps1   // For windows
 pip install -r requirements.txt
 ```
 
 Then switch to the `notebooks` directory and start the Jupyter server
-```console
+```bash
 jupyter notebook
 ```
 
