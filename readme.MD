@@ -45,6 +45,17 @@ Then place the downloaded file under `notebooks/sudoku.csv` Now you can run the 
 
 ### Python backend
 
-
+For running the python backend the same virtual environment create in the previous chapter can be used.
+Activate it and switch to the directory `backend` and run:
+```bash
+py api.py
+```
 
 ### Nextjs frontend
+
+For running the nextjs frontend switch to the directory `frontend` and run:
+
+```bash
+yarn install
+yarn dev
+```
