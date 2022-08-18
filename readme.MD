@@ -19,6 +19,9 @@ You should then be able to view the WebUI on: http://localhost:3000
 Images for testing can be found in the directory images with the names `s0.png`, `s1.png`, `s2.png` and `s3.png`.
 The last one is an example where the image processing is not working correctly probably due to inconsistent lighting of the image.
 
+The usage can be seen below
+![Usage](/images/sudoku.gif)
+
 ## Development
 
 In this chapter will be explained how to start each of the services.
