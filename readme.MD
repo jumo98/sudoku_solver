@@ -30,7 +30,7 @@ In this chapter will be explained how to start each of the services.
 
 To run the Jupyter notebooks, start by creating a virtual environment, activating it and installing the dependencies from the requirements file.
 ```Shell
-python3 -m venv myvenv
+python -m venv myvenv
 .\myvenv\Scripts\Activate.ps1   // For windows
 pip install -r requirements.txt
 ```
